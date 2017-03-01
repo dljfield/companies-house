@@ -1,0 +1,17 @@
+{
+  "name": "dljfield/companies-house",
+  "description": "Client to interact with Companies House API",
+  "type": "library",
+  "require": {
+    "guzzlehttp/guzzle": "^6.2"
+  },
+  "authors": [
+    {
+      "name": "David Field",
+      "email": "david@thedebonair.net"
+    }
+  ],
+  "autoload": {
+    "psr-4": {"DLJField\\CompaniesHouse\\": "src/"}
+  }
+}
