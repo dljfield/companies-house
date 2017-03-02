@@ -128,7 +128,7 @@ class Client
     private function get($resource, array $headers = [])
     {
         try {
-            return $this->guzzleClient->request('GET', $resource, ['auth' => [$this->apiKey]] + $headers);
+            return $this->guzzleClient->request('GET', $resource, ['auth' => [$this->apiKey, '']] + $headers);
         } catch (ClientException $e) {
             return $e->getResponse();
         }
