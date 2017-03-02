@@ -11,6 +11,25 @@ class InvalidCompanyProfile extends InvalidResponse
      */
     public function __construct($statusCode, $reason, $contents = null)
     {
-        parent::__construct('The company profile returned was invalid.', $statusCode, $reason, $contents);
+        parent::__construct($this->resolveMessage($statusCode), $statusCode, $reason, $contents);
+    }
+
+    /**
+     * Resolve a useful exception message based on the status code
+     *
+     * @param $statusCode
+     * @return string
+     */
+    private function resolveMessage($statusCode)
+    {
+        $message = 'The company profile returned was invalid.';
+
+        if ($statusCode == 401) {
+            $message = 'Authentication with Companies House API failed.';
+        } elseif ($statusCode == 404) {
+            $message = 'Could not find a company with the given company number.';
+        }
+
+        return $message;
     }
 }
