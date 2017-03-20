@@ -4,9 +4,11 @@ namespace DLJField\CompaniesHouse;
 
 use DLJField\CompaniesHouse\Exceptions\InvalidCompanyProfile;
 use DLJField\CompaniesHouse\Exceptions\InvalidCompanySearch;
+use DLJField\CompaniesHouse\Exceptions\InvalidFilingHistoryList;
 use DLJField\CompaniesHouse\Exceptions\InvalidOfficerList;
 use DLJField\CompaniesHouse\Responses\CompanyProfile;
 use DLJField\CompaniesHouse\Responses\CompanySearch;
+use DLJField\CompaniesHouse\Responses\FilingHistoryList;
 use DLJField\CompaniesHouse\Responses\OfficerList;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
@@ -88,6 +90,33 @@ class Client
         }
 
         return OfficerList::fromApiResponse($response);
+    }
+
+    /**
+     * List the filing history of the company
+     *
+     * https://developer.companieshouse.gov.uk/api/docs/company/company_number/filing-history/getFilingHistoryList.html
+     *
+     * @param string $companyNumber
+     * @param int $itemsPerPage
+     * @param int $startIndex
+     * @return FilingHistoryList
+     * @throws InvalidFilingHistoryList
+     */
+    public function getFilingHistoryList($companyNumber, $itemsPerPage = null, $startIndex = null)
+    {
+        $response = $this->get('/company/' . $companyNumber . '/filing-history', [
+            'query' => [
+                'items_per_page' => $itemsPerPage,
+                'start_index' => $startIndex
+            ]
+        ]);
+
+        if ($response->getStatusCode() != 200) {
+            throw new InvalidFilingHistoryList($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
+        }
+
+        return FilingHistoryList::fromApiResponse($response);
     }
 
     /**
