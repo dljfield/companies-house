@@ -165,7 +165,7 @@ class Client
      * @return DocumentMeta
      * @throws InvalidDocumentMeta
      */
-    public function documentMeta($documentId)
+    public function getDocumentMeta($documentId)
     {
         $response = $this->getDocument("/document/$documentId");
 
@@ -186,7 +186,7 @@ class Client
      * @return DocumentContents
      * @throws InvalidDocumentContents
      */
-    public function documentContents($documentId, $contentType)
+    public function getDocumentContents($documentId, $contentType)
     {
         $response = $this->getDocument("/document/$documentId/content", [
             'query' => [

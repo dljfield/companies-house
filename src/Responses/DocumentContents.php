@@ -13,7 +13,7 @@ class DocumentContents extends ApiResponse
     /**
      * @var string
      */
-    public $contents;
+    public $content;
 
     /**
      * @var string
@@ -21,12 +21,12 @@ class DocumentContents extends ApiResponse
     public $contentLength;
 
     /**
-     * @param string $contents
+     * @param string $content
      * @param string $contentLength
      */
-    public function __construct($contents, $contentLength)
+    public function __construct($content, $contentLength)
     {
-        $this->contents = $contents;
+        $this->content = $content;
         $this->contentLength = $contentLength;
     }
 
