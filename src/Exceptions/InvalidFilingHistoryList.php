@@ -20,7 +20,7 @@ class InvalidFilingHistoryList extends InvalidResponse
      * @param $statusCode
      * @return string
      */
-    private function resolveMessage($statusCode)
+    protected function resolveMessage($statusCode)
     {
         $message = 'The filing history list returned was invalid.';
 

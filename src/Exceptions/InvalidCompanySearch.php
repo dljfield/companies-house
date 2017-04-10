@@ -18,7 +18,7 @@ class InvalidCompanySearch extends InvalidResponse
      * @param $statusCode
      * @return string
      */
-    private function resolveMessage($statusCode)
+    protected function resolveMessage($statusCode)
     {
         $message = 'The company search returned was invalid.';
 

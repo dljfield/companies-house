@@ -188,14 +188,16 @@ class Client
      */
     public function documentContents($documentId, $contentType)
     {
-        $response = $this->getDocument("/document/$documentId/contents", [
+        $response = $this->getDocument("/document/$documentId/content", [
             'query' => [
                 'accept' => $contentType
             ]
         ]);
 
-        if ($response->getStatusCode() !== 200) {
-            throw new InvalidDocumentContents($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode !== 200 && $statusCode !== 302) {
+            throw new InvalidDocumentContents($statusCode, $response->getReasonPhrase(), $response->getBody()->getContents());
         }
 
         return DocumentContents::fromApiResponse($response);

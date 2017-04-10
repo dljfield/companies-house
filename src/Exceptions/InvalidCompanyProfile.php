@@ -20,7 +20,7 @@ class InvalidCompanyProfile extends InvalidResponse
      * @param $statusCode
      * @return string
      */
-    private function resolveMessage($statusCode)
+    protected function resolveMessage($statusCode)
     {
         $message = 'The company profile returned was invalid.';
 

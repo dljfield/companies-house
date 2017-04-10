@@ -20,7 +20,7 @@ class InvalidOfficerList extends InvalidResponse
      * @param $statusCode
      * @return string
      */
-    private function resolveMessage($statusCode)
+    protected function resolveMessage($statusCode)
     {
         $message = 'The officer list returned was invalid.';
 
