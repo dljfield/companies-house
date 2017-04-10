@@ -4,10 +4,14 @@ namespace DLJField\CompaniesHouse;
 
 use DLJField\CompaniesHouse\Exceptions\InvalidCompanyProfile;
 use DLJField\CompaniesHouse\Exceptions\InvalidCompanySearch;
+use DLJField\CompaniesHouse\Exceptions\InvalidDocumentContents;
+use DLJField\CompaniesHouse\Exceptions\InvalidDocumentMeta;
 use DLJField\CompaniesHouse\Exceptions\InvalidFilingHistoryList;
 use DLJField\CompaniesHouse\Exceptions\InvalidOfficerList;
 use DLJField\CompaniesHouse\Responses\CompanyProfile;
 use DLJField\CompaniesHouse\Responses\CompanySearch;
+use DLJField\CompaniesHouse\Responses\DocumentContents;
+use DLJField\CompaniesHouse\Responses\DocumentMeta;
 use DLJField\CompaniesHouse\Responses\FilingHistoryList;
 use DLJField\CompaniesHouse\Responses\OfficerList;
 use GuzzleHttp\Client as GuzzleClient;
@@ -29,6 +33,13 @@ class Client
     private $apiBaseUrl = 'https://api.companieshouse.gov.uk';
 
     /**
+     * The base URL for the Companies House Document API
+     *
+     * @var string
+     */
+    private $documentApiBaseUrl = 'http://document-api.companieshouse.gov.uk';
+
+    /**
      * @var string
      */
     private $apiKey;
@@ -39,8 +50,6 @@ class Client
     public function __construct($apiKey)
     {
         $this->apiKey = $apiKey;
-
-        $this->setupClient();
     }
 
     /**
@@ -56,7 +65,7 @@ class Client
     {
         $response = $this->get('/company/' . $companyNumber);
 
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new InvalidCompanyProfile($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
         }
 
@@ -85,7 +94,7 @@ class Client
             ],
         ]);
 
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new InvalidOfficerList($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
         }
 
@@ -112,7 +121,7 @@ class Client
             ]
         ]);
 
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new InvalidFilingHistoryList($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
         }
 
@@ -140,11 +149,84 @@ class Client
             ],
         ]);
 
-        if ($response->getStatusCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             throw new InvalidCompanySearch($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
         }
 
         return CompanySearch::fromApiResponse($response);
+    }
+
+    /**
+     * Get document meta
+     *
+     * https://developer.companieshouse.gov.uk/document/docs/document/id/fetchDocumentMeta.html
+     *
+     * @param string $documentId
+     * @return DocumentMeta
+     * @throws InvalidDocumentMeta
+     */
+    public function documentMeta($documentId)
+    {
+        $response = $this->getDocument("/document/$documentId");
+
+        if ($response->getStatusCode() !== 200) {
+            throw new InvalidDocumentMeta($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
+        }
+
+        return DocumentMeta::fromApiResponse($response);
+    }
+
+    /**
+     * Get document contents
+     *
+     * https://developer.companieshouse.gov.uk/document/docs/document/id/content/fetchDocument.html
+     *
+     * @param string $documentId
+     * @param string $contentType
+     * @return DocumentContents
+     * @throws InvalidDocumentContents
+     */
+    public function documentContents($documentId, $contentType)
+    {
+        $response = $this->getDocument("/document/$documentId/contents", [
+            'query' => [
+                'accept' => $contentType
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new InvalidDocumentContents($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
+        }
+
+        return DocumentContents::fromApiResponse($response);
+    }
+
+    /**
+     * Perform a GET request on the Companies House API
+     *
+     * @param string $resource
+     * @param array $headers
+     * @return Response
+     */
+    private function get($resource, array $headers = [])
+    {
+        $this->setupClient($this->apiBaseUrl);
+
+        return $this->performGetRequest($resource, $headers);
+    }
+
+    /**
+     * Perform a GET request on the document API
+     *
+     * @param string $resource
+     * @param array $headers
+     * @return Response
+     */
+    private function getDocument($resource, array $headers = [])
+    {
+        $this->setupClient($this->documentApiBaseUrl);
+
+        return $this->performGetRequest($resource, $headers);
     }
 
     /**
@@ -154,7 +236,7 @@ class Client
      * @param array $headers
      * @return Response
      */
-    private function get($resource, array $headers = [])
+    private function performGetRequest($resource, array $headers = [])
     {
         try {
             return $this->guzzleClient->request('GET', $resource, ['auth' => [$this->apiKey, '']] + $headers);
@@ -168,8 +250,8 @@ class Client
      *
      * @return void
      */
-    private function setupClient()
+    private function setupClient($baseUri)
     {
-        $this->guzzleClient = new GuzzleClient(['base_uri' => $this->apiBaseUrl]);
+        $this->guzzleClient = new GuzzleClient(['base_uri' => $baseUri]);
     }
 }

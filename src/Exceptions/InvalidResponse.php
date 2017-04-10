@@ -44,4 +44,12 @@ abstract class InvalidResponse extends Exception
             $this->contents = json_decode($contents, true);
         }
     }
+
+    /**
+     * Resolves a userful exception message based on the status code
+     *
+     * @param int $statusCode
+     * @return string
+     */
+    abstract protected function resolveMessage($statusCode);
 }
