@@ -17,10 +17,10 @@ This client currently has at least partial support for the following endpoints o
 - [Company Profile](https://developer.companieshouse.gov.uk/api/docs/company/company_number/company_number.html)
 - [Officer List](https://developer.companieshouse.gov.uk/api/docs/company/company_number/officers/officers.html)
 - [Filing History List](https://developer.companieshouse.gov.uk/api/docs/company/company_number/filing-history/getFilingHistoryList.html)
+- [Persons With Significant Control List](https://developer.companieshouse.gov.uk/api/docs/company/company_number/persons-with-significant-control/listPersonsWithSignificantControl.html)
 - [Company Search](https://developer.companieshouse.gov.uk/api/docs/search/companies/companysearch.html)
 - [Document Meta](https://developer.companieshouse.gov.uk/document/docs/document/id/fetchDocumentMeta.html)
 - [Document Contents](https://developer.companieshouse.gov.uk/document/docs/document/id/content/fetchDocument.html)
-
 
 ## Usage
 
