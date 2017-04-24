@@ -8,12 +8,14 @@ use DLJField\CompaniesHouse\Exceptions\InvalidDocumentContents;
 use DLJField\CompaniesHouse\Exceptions\InvalidDocumentMeta;
 use DLJField\CompaniesHouse\Exceptions\InvalidFilingHistoryList;
 use DLJField\CompaniesHouse\Exceptions\InvalidOfficerList;
+use DLJField\CompaniesHouse\Exceptions\InvalidPersonsWithSignificantControlList;
 use DLJField\CompaniesHouse\Responses\CompanyProfile;
 use DLJField\CompaniesHouse\Responses\CompanySearch;
 use DLJField\CompaniesHouse\Responses\DocumentContents;
 use DLJField\CompaniesHouse\Responses\DocumentMeta;
 use DLJField\CompaniesHouse\Responses\FilingHistoryList;
 use DLJField\CompaniesHouse\Responses\OfficerList;
+use DLJField\CompaniesHouse\Responses\PersonsWithSignificantControlList;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
@@ -126,6 +128,35 @@ class Client
         }
 
         return FilingHistoryList::fromApiResponse($response);
+    }
+
+    /**
+     * List the persons with significant control for the company
+     *
+     * https://developer.companieshouse.gov.uk/api/docs/company/company_number/persons-with-significant-control/listPersonsWithSignificantControl.html
+     *
+     * @param string $companyNumber
+     * @param int $itemsPerPage
+     * @param int $startIndex
+     * @param bool $registerView
+     * @return PersonsWithSignificantControlList
+     * @throws InvalidPersonsWithSignificantControlList
+     */
+    public function getPersonsWithSignificantControlList($companyNumber, $itemsPerPage = null, $startIndex = null, $registerView = false)
+    {
+        $response = $this->get('/company/' . $companyNumber . '/persons-with-significant-control', [
+            'query' => [
+                'items_per_page' => $itemsPerPage,
+                'start_index' => $startIndex,
+                'register_view' => $registerView
+            ]
+        ]);
+
+        if ($response->getStatusCode() !== 200) {
+            throw new InvalidPersonsWithSignificantControlList($response->getStatusCode(), $response->getReasonPhrase(), $response->getBody()->getContents());
+        }
+
+        return PersonsWithSignificantControlList::fromApiResponse($response);
     }
 
     /**

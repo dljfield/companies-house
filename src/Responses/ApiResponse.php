@@ -9,7 +9,7 @@ abstract class ApiResponse
     /**
      * @param string $contents
      */
-    private function __construct($contents)
+    public function __construct($contents)
     {
         foreach (json_decode($contents) as $key => $item) {
             $this->{$key} = $item;
